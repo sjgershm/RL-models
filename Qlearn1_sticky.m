@@ -9,7 +9,6 @@ function [lik, data] = Qlearn1_sticky(x,data)
     %       x(1) - inverse temperature
     %       x(2) - learning rate
     %       x(3) - stickiness inverse temperature
-    %       x(4) - stickiness decay
     %   data - structure with the following fields (likelihood mode)
     %           .c - [N x 1] choices
     %           .r - [N x 1] rewards
@@ -32,7 +31,6 @@ function [lik, data] = Qlearn1_sticky(x,data)
     b = x(1);
     lr = x(2);
     bs = x(3);
-    bd = x(4);
     
     if isfield(data,'R') == 1 % simulation mode
         C = data.C;
@@ -47,7 +45,7 @@ function [lik, data] = Qlearn1_sticky(x,data)
             r = data.R(c);
             rpe = r-v(c);           % reward prediction error
             v(c) = v(c) + lr*rpe;   % update values
-            u = u.*bd; u(c) = 1;    % update stickiness
+            u = zeros(1,C); u(c) = 1;    % update stickiness
             data.c(n,1) = c;
             data.r(n,1) = r;
             data.v(n,:) = v;
@@ -65,7 +63,7 @@ function [lik, data] = Qlearn1_sticky(x,data)
             lik = lik + q(c) - logsumexp(q,2);
             rpe = r-v(c);
             v(c) = v(c) + lr*rpe;   % update values
-            u = u.*bd; u(c) = 1;    % update stickiness
+            u = zeros(1,C); u(c) = 1;    % update stickiness
             data.v(n,:) = v;
             data.rpe(n,1) = rpe;
         end
