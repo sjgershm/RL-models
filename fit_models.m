@@ -31,7 +31,7 @@ function [results, bms_results] = fit_models(data,models)
     param(2).lb = 0;
     param(2).ub = 1;
     
-    g = [0 1];  % parameters of the gamma prior
+    g = [0 1];  % parameters of the normal prior
     param(3).name = 'inverse temperature';
     param(3).logpdf = @(x) sum(log(normpdf(x,g(1),g(2))));  % log density function for prior
     param(3).lb = -5;    % lower bound
