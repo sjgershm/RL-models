@@ -38,6 +38,7 @@ function [lik, data] = Qlearn1_sticky(x,data)
         u = zeros(1,C);  % stickiness
         lik = 0;
         for n = 1:data.N
+            data.v(n,:) = v;
             q = b*v + bs*u;
             p = exp(q - logsumexp(q,2));
             c = fastrandsample(p);
@@ -48,7 +49,6 @@ function [lik, data] = Qlearn1_sticky(x,data)
             u = zeros(1,C); u(c) = 1;    % update stickiness
             data.c(n,1) = c;
             data.r(n,1) = r;
-            data.v(n,:) = v;
             data.rpe(n,1) = rpe;
         end
     else                 % likelihood mode
@@ -59,12 +59,12 @@ function [lik, data] = Qlearn1_sticky(x,data)
         for n = 1:data.N
             c = data.c(n);
             r = data.r(n);
+            data.v(n,:) = v;
             q = b*v + bs*u;
             lik = lik + q(c) - logsumexp(q,2);
             rpe = r-v(c);
             v(c) = v(c) + lr*rpe;   % update values
             u = zeros(1,C); u(c) = 1;    % update stickiness
-            data.v(n,:) = v;
             data.rpe(n,1) = rpe;
         end
     end

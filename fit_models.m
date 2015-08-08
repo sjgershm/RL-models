@@ -55,7 +55,11 @@ function [results, bms_results] = fit_models(data,models)
                 p = [1 2 2 3];
         end
         
-        results(m) = mfit_optimize(fun,param(p),data,nstarts);
+        R = mfit_optimize(fun,param(p),data,nstarts);
+        for s = 1:length(data)
+            [~,R.data(s)] = fun(R.x(s,:),data(s));
+        end
+        results(m) = R;
     end
     
     [alpha,exp_r,xp,pxp,bor] = mfit_bms(results);

@@ -35,6 +35,7 @@ function [lik, data] = Qlearn1(x,data)
         v = zeros(1,C);  % initial values
         lik = 0;
         for n = 1:data.N
+            data.v(n,:) = v;
             p = exp(b*v - logsumexp(b*v,2));
             c = fastrandsample(p);
             lik = lik + log(p(c));
@@ -43,7 +44,6 @@ function [lik, data] = Qlearn1(x,data)
             v(c) = v(c) + lr*rpe;   % update values
             data.c(n,1) = c;
             data.r(n,1) = r;
-            data.v(n,:) = v;
             data.rpe(n,1) = rpe;
         end
     else                 % likelihood mode
@@ -51,12 +51,12 @@ function [lik, data] = Qlearn1(x,data)
         v = zeros(1,C);  % initial values
         lik = 0;
         for n = 1:data.N
+            data.v(n,:) = v;
             c = data.c(n);
             r = data.r(n);
             lik = lik + b*v(c) - logsumexp(b*v,2);
             rpe = r-v(c);
             v(c) = v(c) + lr*rpe;      % update values
-            data.v(n,:) = v;
             data.rpe(n,1) = rpe;
         end
     end
