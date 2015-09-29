@@ -34,7 +34,7 @@ function [lik, data] = Qlearn1_sticky(x,data)
     
     if isfield(data,'R') == 1 % simulation mode
         C = data.C;
-        v = zeros(1,C);  % initial values
+        v = ones(1,C)/C;  % initial values
         u = zeros(1,C);  % stickiness
         lik = 0;
         for n = 1:data.N
@@ -53,10 +53,15 @@ function [lik, data] = Qlearn1_sticky(x,data)
         end
     else                 % likelihood mode
         C = max(unique(data.c)); % number of options
-        v = zeros(1,C);  % initial values
-        u = zeros(1,C);  % stickiness
         lik = 0;
+        if ~isfield(data,'block'); data.block = ones(data.N,1); end
         for n = 1:data.N
+            
+            if n == 1 || data.block(n)~=data.block(n-1)
+                v = ones(1,C)/C;  % initial values
+                u = zeros(1,C);  % stickiness
+            end
+            
             c = data.c(n);
             r = data.r(n);
             data.v(n,:) = v;
