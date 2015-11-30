@@ -1,44 +1,45 @@
-function [results, bms_results, empirical_prior] = fit_models(data,paramfun,models)
+function [results, bms_results] = fit_models(data,opts)
     
     % Fit RL models using MFIT.
     %
-    % USAGE: [results, bms_results] = fit_models(data,paramfun,models)
+    % USAGE: [results, bms_results] = fit_models(data,opts)
     %
     % INPUTS:
     %   data - [S x 1] structure array of data for S subjects
-    %   paramfun - function handle that takes the model name as input and returns a parameter structure
-    %   models (optional) - cell array of model names (default: {'Qlearn1' 'Qlearn2' 'Qlearn1_sticky' 'Qlearn2_sticky'})
+    %   opts - [M x 1] structure of model options (see set_opts.m)
     %
     % OUTPUTS:
-    %   results - [S x 1] model fits for each subject
+    %   results - [M x 1] model fits
     %   bms_results - Bayesian model selection results
-    %   empirical_prior - prior fit to parameter estimates
     %
-    % Sam Gershman, July 2015
+    % Sam Gershman, Nov 2015
     
-    if nargin < 3 || isempty(models)
-        models = {'Qlearn1' 'Qlearn2' 'Qlearn1_sticky' 'Qlearn2_sticky'};
-    end
-    
-    for m = 1:length(models)
+    for m = 1:length(opts)
+        
+        disp(['... fitting model ',num2str(m),' out of ',num2str(length(opts))]);
         
         % get parameter structure
-        param = paramfun(models{m});
+        [opts1, param] = set_opts(opts(m));
         
         % fit model
-        fun = str2func(models{m});
+        tic
+        fun = @(x,data) Qlearn(x,data,opts1);
         R = mfit_optimize(fun,param,data);
+        toc
+        R.opts = opts1;
         
         % collect latent variables
-        for s = 1:length(data)
-            [~,R.data(s)] = fun(R.x(s,:),data(s));
+        if opts1.latents
+            for s = 1:length(data)
+                [~,R.latents(s)] = fun(R.x(s,:),data(s));
+            end
         end
         
-        % estimate prior
-        empirical_prior.(models{m}) = mfit_priorfit(R.x,param);  % estimate prior
+        % fit empirical prior
+        R.param_empirical = mfit_priorfit(R.x,param);
         
-        % store results
         results(m) = R;
+        
     end
     
     % Bayesian model selection
