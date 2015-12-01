@@ -50,10 +50,6 @@ function [lik, latents] = Qlearn(x,data,opts)
     rho_neg = y(8);     % punishment sensitivity
     epsilon = y(9);     % lapse rate
     
-    % fill in missing info
-    if ~isfield(data,'block'); data.block = ones(data.N,1); end
-    if ~isfield(data,'go'); data.go = zeros(data.N,1); end
-    
     lik = 0; C = data.C;
     for n = 1:data.N
         
@@ -76,16 +72,21 @@ function [lik, latents] = Qlearn(x,data,opts)
         
         % store latent variables and update values
         if r < 0; rho = rho_neg; else rho = rho_pos; end
-        latents.rpe(n,1) = rho*r - Q(c);
-        latents.Q(n,:) = Q;
-        latents.V(n,1) = V;
-        latents.W(n,:) = W;
-        latents.P(n,:) = P;
-        if latents.rpe(n) > 0
-            Q(c) = Q(c) + lr_pos*latents.rpe(n);
+        rpe = rho*r - Q(c);
+        
+        if nargout > 1
+            latents.rpe(n,1) = rpe;
+            latents.Q(n,:) = Q;
+            latents.V(n,1) = V;
+            latents.W(n,:) = W;
+            latents.P(n,:) = P;
+        end
+        
+        if rpe > 0
+            Q(c) = Q(c) + lr_pos*rpe;
             V = V + lr_pos*(rho*r - V);
         else
-            Q(c) = Q(c) + lr_neg*latents.rpe(n);
+            Q(c) = Q(c) + lr_neg*rpe;
             V = V + lr_neg*(rho*r - V);
         end
         

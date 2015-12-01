@@ -14,6 +14,12 @@ function [results, bms_results] = fit_models(data,opts)
     %
     % Sam Gershman, Nov 2015
     
+    % fill in missing fields
+    for s = 1:length(data)
+        if ~isfield(data(s),'block') || isempty(data(s).block); data(s).block = ones(data(s).N,1); end
+        if ~isfield(data(s),'go') || isempty(data(s).go); data(s).go = zeros(data(s).N,1); end
+    end
+    
     for m = 1:length(opts)
         
         disp(['... fitting model ',num2str(m),' out of ',num2str(length(opts))]);
