@@ -77,7 +77,7 @@ function [opts, param] = set_opts(opts)
     param(3).name = 'lr_neg';
     
     param(4).name = 'choice stickiness';
-    param(4).hp = [0 3]; % hyperparameters of the normal prior
+    param(4).hp = [0 10]; % hyperparameters of the normal prior
     param(4).logpdf = @(x) sum(log(normpdf(x,param(4).hp(1),param(4).hp(2))));  % log density function for prior
     param(4).lb = -5;    % lower bound
     param(4).ub = 5;     % upper bound
@@ -96,7 +96,7 @@ function [opts, param] = set_opts(opts)
     param(8).name = 'rho_neg';
     
     param(9).name = 'epsilon';
-    param(9).hp = [1.2 2];    % hyperparameters of beta prior
+    param(9).hp = [1.2 5];    % hyperparameters of beta prior
     param(9).logpdf = @(x) sum(log(betapdf(x,param(9).hp(1),param(9).hp(2))));
     param(9).lb = 0;
     param(9).ub = 0.99;

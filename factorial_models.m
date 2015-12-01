@@ -14,26 +14,52 @@ function opts = factorial_models(Opts)
     %
     % Sam Gershman, Nov 2015
     
-    if nargin < 1 || isempty(Opts)
-        Opts.go_bias = [false true];
-        Opts.sticky = false;
-        Opts.dual_learning_rate = false;
-        Opts.lapse = [false true];
-        Opts.inverse_temp = [false true];
-        Opts.pavlovian_bias = [false true];
-        Opts.sensitivity = [0 1 2];
+    F = fieldnames(Opts);
+    for f = 1:length(F)
+        X{f} = Opts.(F{f});
     end
     
-    g = CombVec(Opts.go_bias,Opts.sticky,Opts.dual_learning_rate,Opts.lapse,Opts.inverse_temp,Opts.pavlovian_bias,Opts.sensitivity);
+    g = MyCombVec(X);
     
     for m = 1:size(g,2)
-        
-        opts(m).go_bias = g(1,m);
-        opts(m).sticky = g(2,m);
-        opts(m).dual_learning_rate = g(3,m);
-        opts(m).lapse = g(4,m);
-        opts(m).inverse_temp = g(5,m);
-        opts(m).pavlovian_bias = g(6,m);
-        opts(m).sensitivity = g(7,m);
-        
+        for f = 1:length(F)
+            opts(m).(F{f}) = g(f,m);
+        end
     end
+end
+
+%=========================================================
+
+function out = MyCombVec(X)
+    % Generate all possible combinations of input vectors.
+    
+    if nargin == 0
+        out = [];
+    else
+        out = X{1};
+        for i=2:length(X)
+            cur = X{i};
+            out = [copyb(out,size(cur,2)); copyi(cur,size(out,2))];
+        end
+    end
+end
+
+%=========================================================
+function b = copyb(mat,s)
+    
+    [mr,mc] = size(mat);
+    inds    = 1:mc;
+    inds    = inds(ones(s,1),:).';
+    b       = mat(:,inds(:));
+    
+end
+
+%=========================================================
+function b = copyi(mat,s)
+    
+    [mr,mc] = size(mat);
+    inds    = 1:mc;
+    inds    = inds(ones(s,1),:);
+    b       = mat(:,inds(:));
+    
+end
