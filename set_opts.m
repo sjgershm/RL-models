@@ -85,18 +85,22 @@ function [opts, param] = set_opts(opts)
     
     param(5) = param(4);
     param(5).name = 'pi';
+    param(5).logpdf = @(x) 0;
+    param(5).lb = 0;    % lower bound
+    param(5).ub = 10;     % upper bound
     
     param(6) = param(4);
     param(6).name = 'b';
+    param(6).logpdf = @(x) 0;
     
     param(7) = param(1);
     param(7).name = 'rho_pos';
     
-    param(8) = param(1);
+    param(8) = param(7);
     param(8).name = 'rho_neg';
     
     param(9).name = 'epsilon';
-    param(9).hp = [1.2 5];    % hyperparameters of beta prior
+    param(9).hp = [1.2 4];    % hyperparameters of beta prior
     param(9).logpdf = @(x) sum(log(betapdf(x,param(9).hp(1),param(9).hp(2))));
     param(9).lb = 0;
     param(9).ub = 0.99;
