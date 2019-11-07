@@ -20,6 +20,10 @@ function [results, bms_results, empirical_prior] = fit_models(data,paramfun,mode
         models = {'Qlearn1' 'Qlearn2' 'Qlearn1_sticky' 'Qlearn2_sticky'};
     end
     
+    if nargin < 2 || isempty(paramfun)
+        paramfun = @(model) RL_paramfun(model,'uniform');
+    end
+    
     for m = 1:length(models)
         
         % get parameter structure

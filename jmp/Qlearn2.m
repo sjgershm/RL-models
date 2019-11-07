@@ -55,10 +55,10 @@ function [lik, data] = Qlearn2(x,data)
     else                 % likelihood mode
         C = max(unique(data.c)); % number of options
         lik = 0;
-        if ~isfield(data,'block'); data.block = ones(data.N,1); end
+        if ~isfield(data,'game'); data.game = ones(data.N,1); end
         for n = 1:data.N
             
-            if n == 1 || data.block(n)~=data.block(n-1)
+            if n == 1 || data.game(n)~=data.game(n-1)
                 v = ones(1,C)/C;  % initial values
             end
             

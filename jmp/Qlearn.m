@@ -41,14 +41,14 @@ function [lik, latents] = Qlearn(x,data)
     C = data.C;
     
     % fill in missing info
-    if ~isfield(data,'block'); data.block = ones(data.N,1); end
+    if ~isfield(data,'game'); data.game = ones(data.N,1); end
     if ~isfield(data,'go'); data.go = zeros(data.N,1); end
     
     lik = 0;
     for n = 1:data.N
         
-        % reset values and stickiness for new block or first trial
-        if n == 1 || data.block(n)~=data.block(n-1)
+        % reset values and stickiness for new game or first trial
+        if n == 1 || data.game(n)~=data.game(n-1)
             Q = ones(1,C)/C;    % initial action values
             V = 0;              % initial state value
             U = zeros(1,C);     % stickiness
